@@ -19,17 +19,14 @@ def sorting_function(directory: str) -> None:
     """
     try:
         folder = os.listdir(path=directory)
-        try:
-            for extension in EXTENSIONS:
-                os.mkdir(path=f"{directory}/{extension}")
-        except FileExistsError:
-            pass
-        finally:
-            for file in folder:
-                if len(file.split(".")) >= 2:
-                    for name, ex in EXTENSIONS.items():
-                        if file.split(".")[-1] in ex:
-                            shutil.move(f"{directory}/{file}", f"{directory}/{name}/{file}")
+        exists_folders = [fold for fold in folder if len(fold.split(".")) < 2 and fold in EXTENSIONS.keys()]
+        for extension in EXTENSIONS:
+            os.mkdir(path=os.path.join(directory, extension)) if extension not in exists_folders else None
+        for file in folder:
+            if len(file.split(".")) >= 2:
+                for name, ex in EXTENSIONS.items():
+                    if file.split(".")[-1] in ex:
+                        shutil.move(os.path.join(directory, file), os.path.join(directory, name, file))
     except NotADirectoryError as e:
         print(f"Sorry, the file could not be found.\n{e}")
     finally:
